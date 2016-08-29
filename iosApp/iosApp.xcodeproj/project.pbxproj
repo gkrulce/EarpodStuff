@@ -12,6 +12,7 @@
 		BC62ABA81D72A1CF005C6269 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC62ABA61D72A1CF005C6269 /* Main.storyboard */; };
 		BC62ABAA1D72A1CF005C6269 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC62ABA91D72A1CF005C6269 /* Assets.xcassets */; };
 		BC62ABAD1D72A1CF005C6269 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC62ABAB1D72A1CF005C6269 /* LaunchScreen.storyboard */; };
+		BCD8FE9D1D73F7B800D58BB5 /* apple_earbuds01.jpg in Resources */ = {isa = PBXBuildFile; fileRef = BCD8FE9C1D73F7B800D58BB5 /* apple_earbuds01.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		BC62ABA91D72A1CF005C6269 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BC62ABAC1D72A1CF005C6269 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BC62ABAE1D72A1CF005C6269 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BCD8FE9C1D73F7B800D58BB5 /* apple_earbuds01.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = apple_earbuds01.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 		BC62ABA11D72A1CF005C6269 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				BCD8FE9C1D73F7B800D58BB5 /* apple_earbuds01.jpg */,
 				BC62ABA21D72A1CF005C6269 /* AppDelegate.swift */,
 				BC62ABA41D72A1CF005C6269 /* ViewController.swift */,
 				BC62ABA61D72A1CF005C6269 /* Main.storyboard */,
@@ -124,6 +127,7 @@
 			files = (
 				BC62ABAD1D72A1CF005C6269 /* LaunchScreen.storyboard in Resources */,
 				BC62ABAA1D72A1CF005C6269 /* Assets.xcassets in Resources */,
+				BCD8FE9D1D73F7B800D58BB5 /* apple_earbuds01.jpg in Resources */,
 				BC62ABA81D72A1CF005C6269 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -288,6 +292,7 @@
 				BC62ABB31D72A1CF005C6269 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
