@@ -8,8 +8,9 @@ export HOME_DIR=`pwd`
 if [ "--full" = "$1" ]
 then
     cd $HOME_DIR/fftLib
-    ./configure
+    ./configure --prefix=$HOME_DIR/fftLib/local/
     make
+    make install
     cd $HOME_DIR
 fi
 
