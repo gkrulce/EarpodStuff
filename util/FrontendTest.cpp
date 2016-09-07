@@ -7,9 +7,9 @@ using namespace std;
 int main() {
     const float PI = 3.1415926535;
     const int sampleRate = 44100;
-    const float frequency = 10000;
+    const float frequency = 30000;
     const float samplesPerCycle = sampleRate/frequency;
-    const int frameSize = 100000;
+    const int frameSize = 2048;
     vector<short> in(frameSize);
     for(int i = 0; i < in.size(); ++i) {
         in[i] = (short) (32767 * sin(2*i*PI/samplesPerCycle));

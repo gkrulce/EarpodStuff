@@ -13,7 +13,7 @@ class Frontend {
     private:
     const int sampleRate_;
     const int frameSize_;
-    const int buckets_{10};
+    const int buckets_{8};
     const int bucketSize_;
     fftw_plan plan_;
     fftw_complex *fft_;
