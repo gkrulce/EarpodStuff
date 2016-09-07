@@ -26,6 +26,7 @@ vector<double> Frontend::calculate(const vector<short> &samples) {
         assert(fft_[i][0] < 1.0 && fft_[i][0] > -1.0);
         fft_[i][1] = 0;
     }
+    plan_ = fftw_plan_dft_1d(frameSize_, fft_, fft_, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(plan_);
     vector<double> result(frameSize_);
     for(int i = 0; i < frameSize_; ++i) {
