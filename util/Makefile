@@ -1,12 +1,25 @@
 FFT_INCLUDE = $(HOME_DIR)/fftLib/local/include/
 FFT_LIBRARY = $(HOME_DIR)/fftLib/local/lib/
 
-test: Frontend.o FrontendTest.cpp
-	g++ -Wall -std=c++11 -I$(FFT_INCLUDE) FrontendTest.cpp Frontend.o -L$(FFT_LIBRARY) -lfftw3 -lm -o test
+CC = g++
+CFLAGS = -Wall -std=c++11
+LFLAGS = -lfftw3 -lm 
+SOURCES = ConversionScript.cpp Frontend.cpp FrontendTest.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+INCLUDE = -I$(FFT_INCLUDE)
+L_INCLUDE = -L$(FFT_LIBRARY)
 
-Frontend.o: Frontend.cpp Frontend.hpp
-	g++ -c -std=c++11 -I $(FFT_INCLUDE) Frontend.cpp
+all: $(SOURCES) FrontendTest ConversionScript
+
+FrontendTest: $(OBJECTS)
+	$(CC) $(CFLAGS) $(INCLUDE) FrontendTest.o Frontend.o $(L_INCLUDE) $(LFLAGS) -o FrontendTest
+
+ConversionScript: $(OBJECTS)
+	$(CC) $(CFLAGS) $(INCLUDE) ConversionScript.o Frontend.o $(L_INCLUDE) $(LFLAGS) -o ConversionScript
+
+.cpp.o:
+	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
 
 clean:
-	rm *.o test
+	rm -f *.o test
 

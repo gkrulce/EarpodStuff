@@ -24,9 +24,5 @@ fi
 
 cd $HOME_DIR/util
 make
-
 DATA_DIR="/Users/gkrulce/Desktop/Audio Samples"
-cd $HOME_DIR/tensorflow
-source tensorflowEnv/bin/activate
-python fileIO.py -out "small.csv" -volUp "$DATA_DIR/VolumeUp" -volDown "$DATA_DIR/VolumeDown" -noise "$DATA_DIR/Noise"
-deactivate
+./ConversionScript "$HOME_DIR/small.csv" "$DATA_DIR/VolumeUp" "$DATA_DIR/VolumeDown" "$DATA_DIR/Noise"

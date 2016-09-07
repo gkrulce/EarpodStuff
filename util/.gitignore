@@ -1,3 +1,4 @@
 *.o
 *.swp
-test
+FrontendTest
+ConversionScript
