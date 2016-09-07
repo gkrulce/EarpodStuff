@@ -16,10 +16,9 @@ int main() {
     }
 
     Frontend frontend(sampleRate, frameSize);
-    vector<float> out = frontend.calculate(in);
+    vector<double> out = frontend.calculate(in);
     for(auto &val : out) {
-        cout << val;
+        cout << val << endl;
     }
 
-    assert(count_if(out.begin(), out.end(), [](float val){return val != 0;}) == 1);
 }
