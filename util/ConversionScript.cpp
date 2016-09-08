@@ -52,8 +52,8 @@ vector<double> extractFeatures(const string &origStr, Frontend &frontend) {
     return frontend.calculate(shorts);
 }
 
-void writeToCSVFile(ostream &out, const vector<double> &features, int classId) {
-   out << classId;
+void writeToCSVFile(ostream &out, const vector<double> &features, const string &className) {
+   out << className;
    for(auto &feat: features) {
         out << "," << feat;
    }
@@ -75,17 +75,17 @@ int main(int argc, char * argv[]) {
 
     auto volUp = readAudioFiles(volUpDir);
     for(auto &s: volUp) {
-        writeToCSVFile(outFile, extractFeatures(s, frontend), 0);
+        writeToCSVFile(outFile, extractFeatures(s, frontend), "VolUp");
     }
 
     auto volDown = readAudioFiles(volDownDir);
     for(auto &s: volDown) {
-        writeToCSVFile(outFile, extractFeatures(s, frontend), 1);
+        writeToCSVFile(outFile, extractFeatures(s, frontend), "VolDown");
     }
 
     auto noise = readAudioFiles(noiseDir);
     for(auto &s: noise) {
-        writeToCSVFile(outFile, extractFeatures(s, frontend), 2);
+        writeToCSVFile(outFile, extractFeatures(s, frontend), "Noise");
     }
 
     outFile.close();
