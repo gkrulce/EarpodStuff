@@ -21,13 +21,13 @@ vector<string> readAudioFiles(const string &directoryName) {
             string f = ent->d_name;
             if(f.find(".pcm") != string::npos) {
                 string absoluteFilePath = directoryName + "/" + f;
-                cout << "Reading: " << absoluteFilePath << endl;
                 std::ifstream t(absoluteFilePath);
                 std::string str((std::istreambuf_iterator<char>(t)),
                                  std::istreambuf_iterator<char>());
                 byteStrs.push_back(str);
             }
         }
+        cout << "Read " << byteStrs.size() << " files from " << directoryName << endl;
         closedir (dir);
         return byteStrs;
     } else {
