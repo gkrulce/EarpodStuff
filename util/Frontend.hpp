@@ -14,7 +14,7 @@ class Frontend {
     const int sampleRate_;
     const int frameSize_;
     const int fftOutputSize_;
-    const int buckets_{25};
+    const int buckets_{1025};
     const int bucketSize_;
     fftw_plan plan_;
     double *in_;

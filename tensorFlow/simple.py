@@ -84,11 +84,11 @@ init = tf.initialize_all_variables()
 sess = tf.Session()
 sess.run(init)
 
-for i in range(50):
-    batch_xs, batch_ys = data_next(data,10)
+for i in range(1):
+    batch_xs, batch_ys = data_next(data,200)
     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
-    if i % 5 == 0:
-        correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        test_xs, test_ys = data_test(data)
-        print(sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys}))
+
+correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+test_xs, test_ys = data_test(data)
+print("RESULT: {0}".format(sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})))

@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <numeric>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -32,8 +33,8 @@ vector<double> Frontend::calculate(const vector<short> &samples) {
     vector<double> realOutput(fftOutputSize_);
     vector<double> complexOutput(fftOutputSize_);
     for(int i = 0; i < fftOutputSize_; ++i) {
-        realOutput.at(i) = out_[i][0];
-        complexOutput.at(i) = out_[i][1];
+        realOutput.at(i) = fabs(out_[i][0]);
+        complexOutput.at(i) = fabs(out_[i][1]);
     }
 
     // TODO Maybe capture complex output as well?

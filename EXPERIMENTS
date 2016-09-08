@@ -1,0 +1,8 @@
+First attempt (9/8/16) 
+    2050 features (The absolute value of each frequency with it's real and complex parts). Trained on dataset of 150
+    audio files each of which is 2048 samples long. Fed all data into a single training round since it was pretty small.
+    I'm having a lot of problems with over fitting since this is a teeny tiny data set.
+    The accuracy of the model fluctuates a lot between rounds and is heavily dependent on the split of training data and
+    testing data. As a result, I ran ran training 100 times. Median was .33 but mean was .39. 
+    The model sucks, but I guess it's doing a bit better than average?
+
