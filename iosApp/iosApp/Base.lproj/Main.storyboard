@@ -30,21 +30,30 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="apple_earbuds01.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="775-tb-o0E">
-                                        <rect key="frame" x="0.0" y="62" width="600" height="476"/>
+                                        <rect key="frame" x="0.0" y="62" width="600" height="496"/>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gDT-eh-5kS">
-                                        <rect key="frame" x="0.0" y="550" width="600" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="A8y-kH-Sge"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ugv-Uz-ghv">
+                                        <rect key="frame" x="189" y="570" width="222" height="30"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1gu-Tk-3Jg">
+                                                <rect key="frame" x="0.0" y="0.0" width="112" height="30"/>
+                                                <state key="normal" title="Start Recording!"/>
+                                                <connections>
+                                                    <action selector="StartButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OXS-qL-4Ko"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zoF-ka-6VD">
+                                                <rect key="frame" x="112" y="0.0" width="110" height="30"/>
+                                                <state key="normal" title="Stop Recording!"/>
+                                                <connections>
+                                                    <action selector="StopButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="EHL-lx-W2I"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="775-tb-o0E" firstAttribute="width" secondItem="Bq7-Tb-Wav" secondAttribute="width" id="1Nh-Hl-aD4"/>
-                                    <constraint firstItem="gDT-eh-5kS" firstAttribute="width" secondItem="Bq7-Tb-Wav" secondAttribute="width" id="cp8-cv-OCH"/>
                                     <constraint firstItem="5b3-Kc-qUT" firstAttribute="width" secondItem="Bq7-Tb-Wav" secondAttribute="width" id="x2K-nR-mv3"/>
                                 </constraints>
                             </stackView>

@@ -77,7 +77,7 @@ class Recorder : NSObject, AVAudioRecorderDelegate {
             });
     }
     
-    func finishRecording() {
+    func stopRecording() {
         if(state != State.RECORDING) {
             statusCb(status: "Called finishRecording when not recording!")
             return
