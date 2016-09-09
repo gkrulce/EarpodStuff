@@ -5,4 +5,7 @@ First attempt (9/8/16)
     The accuracy of the model fluctuates a lot between rounds and is heavily dependent on the split of training data and
     testing data. As a result, I ran ran training 100 times. Median was .33 but mean was .39. 
     The model sucks, but I guess it's doing a bit better than average?
+    
+    Update: Able to get 100% accuracy by decreasing the learning rate to .01. It still over-fits, but that's a pretty easy
+    problem to fix.
 
