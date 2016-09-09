@@ -21,5 +21,5 @@ ConversionScript: $(OBJECTS)
 	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
 
 clean:
-	rm -f *.o test
+	rm -f *.o ConversionScript FrontendTest
 

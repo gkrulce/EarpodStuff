@@ -9,10 +9,11 @@ class Frontend {
     public:
     Frontend(int sampleRate, int frameSize);
     ~Frontend();
-    std::vector<double> calculate(const std::vector<short> &samples);
+    // Give big endian 16-bit pcm
+    std::vector<double> calculate(const std::vector<unsigned char> &samples);
     private:
     const int sampleRate_;
-    const int frameSize_;
+    const int frameSize_; // In samples
     const int fftOutputSize_;
     const int buckets_{1025};
     const int bucketSize_;

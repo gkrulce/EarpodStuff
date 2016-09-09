@@ -10,9 +10,13 @@ int main() {
     const float frequency = 30000;
     const float samplesPerCycle = sampleRate/frequency;
     const int frameSize = 2048;
-    vector<short> in(frameSize);
-    for(int i = 0; i < in.size(); ++i) {
-        in[i] = (short) (32767 * sin(2*i*PI/samplesPerCycle));
+    vector<unsigned char> in(2*frameSize);
+    for(int i = 0; i < in.size(); i += 2) {
+        short s = (short) (32767 * sin(2*i*PI/samplesPerCycle));
+        unsigned char lsb = (unsigned char) s;
+        unsigned char msb = (unsigned char) (s >> 8);
+        in.at(i) = lsb;
+        in.at(i+1) = msb;
     }
 
     Frontend frontend(sampleRate, frameSize);

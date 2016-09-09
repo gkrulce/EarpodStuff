@@ -40,16 +40,12 @@ vector<string> readAudioFiles(const string &directoryName) {
 // Input: audio file byte string
 // Output vector of features
 vector<double> extractFeatures(const string &origStr, Frontend &frontend) {
-    string str = origStr;
-    assert(str.size() % 2 == 0);
-    vector<short> shorts;
-    for(int i = 0; i < str.size(); i += 2) {
-        char lsb = str.at(i);
-        char msb = str.at(i+1);
-        short s = (short) ((lsb << 8) | msb);
-        shorts.push_back(s);
+    assert(origStr.size() % 2 == 0);
+    vector<unsigned char> hacky(origStr.size());
+    for(int i = 0; i < origStr.size(); ++i) {
+        hacky.at(i) = origStr.at(i);
     }
-    return frontend.calculate(shorts);
+    return frontend.calculate(hacky);
 }
 
 void writeToCSVFile(ostream &out, const vector<double> &features, const string &className) {

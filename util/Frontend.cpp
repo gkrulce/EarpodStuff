@@ -20,12 +20,15 @@ Frontend::~Frontend() {
     fftw_free(in_);
 }
 
-vector<double> Frontend::calculate(const vector<short> &samples) {
+vector<double> Frontend::calculate(const vector<unsigned char> &samples) {
     assert(sampleRate_ == 44100); // TODO delete me
     assert(frameSize_ == 2048); // Ditto
-    assert(samples.size() == frameSize_);
+    assert(samples.size() == 2 * frameSize_);
     for(int i = 0; i < frameSize_; ++i) {
-        in_[i] = samples.at(i)/32768.0;
+        char lsb = samples.at(2*i);
+        char msb = samples.at(2*i+1);
+        short s = (short) ((lsb << 8) | msb);
+        in_[i] = s/32768.0;
         assert(in_[i] < 1.0 && in_[i] > -1.0);
     }
     plan_ = fftw_plan_dft_r2c_1d(frameSize_, in_, out_, FFTW_ESTIMATE);
