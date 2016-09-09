@@ -15,7 +15,6 @@ class Recorder : NSObject, AVAudioRecorderDelegate {
         case INIT
         case STARTING
         case RECORDING
-        case STOPPING
         case FINISHED
         case FAILURE
     };
@@ -33,18 +32,27 @@ class Recorder : NSObject, AVAudioRecorderDelegate {
     var endTime: NSDate!
     var prevVolume: Float = 0
     var events = [Event]()
+    let statusCb: (status: String)->Void
+    
+    init(statusCb: (status: String)->Void) {
+        self.statusCb = statusCb
+    }
     
     func startRecording() {
-        assert(state == State.INIT);
+        if(state != State.INIT) {
+            statusCb(status: "Called startRecording when already started")
+            return
+        }
         state = State.STARTING;
         initMic({[unowned self](success: Bool) -> Void in
             if(!success) {
                 print("Failed to init microphone; bailing");
+                self.statusCb(status: "Failed to initialize microphone")
                 self.state = State.FAILURE;
                 return;
             }
             print ("Starting to record!")
-            
+            self.statusCb (status: "Starting to record")
             let audioURL = self.getDocumentsDirectory().URLByAppendingPathComponent("recording.pcm")
             let settings = [
                 AVFormatIDKey: Int(kAudioFormatLinearPCM),
@@ -63,10 +71,18 @@ class Recorder : NSObject, AVAudioRecorderDelegate {
                 self.state = State.RECORDING
             } catch {
                 print("Error encountered when recording")
-                self.finishRecording(success: false)
+                self.finish(success: false)
             }
             
             });
+    }
+    
+    func finishRecording() {
+        if(state != State.RECORDING) {
+            statusCb(status: "Called finishRecording when not recording!")
+            return
+        }
+        finish(success: true)
     }
     
     private func initMic(cb: (success: Bool)->Void) {
@@ -95,14 +111,11 @@ class Recorder : NSObject, AVAudioRecorderDelegate {
         }
     }
     
-    // Should automatically create a couple files tied together with a common hash
-    // Audio file
-    // CSV event file containing events & timestamps
-    // Metadata file
-    func finishRecording(success success: Bool) {
+    private func finish(success success: Bool) {
         audioRecorder.stop()
         audioRecorder = nil
         endTime = NSDate()
+        statusCb(status: "Done recording")
         if(!success) {
             state = State.FAILURE;
         }else {
@@ -149,9 +162,11 @@ class Recorder : NSObject, AVAudioRecorderDelegate {
             var event: Event
             if recordingSession.outputVolume < prevVolume {
                 print ("Volume went down!")
+                statusCb(status: "Saw volume up!")
                 event = Event(event:"VolDown", time:currTime)
             }else {
                 print ("Volume went up!")
+                statusCb(status: "Saw volume down!")
                 event = Event(event:"VolUp", time:currTime)
             }
             events.append(event)
@@ -161,7 +176,7 @@ class Recorder : NSObject, AVAudioRecorderDelegate {
     
     func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
         if (!flag) {
-            finishRecording(success: false)
+            finish(success: false)
         }
     }
     
