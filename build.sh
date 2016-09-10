@@ -22,8 +22,15 @@ then
     deactivate
 fi
 
+# CPP util
 cd $HOME_DIR/util
 make clean
 make
 DATA_DIR="/Users/gkrulce/Desktop/Audio Samples"
 ./ConversionScript "$HOME_DIR/small.csv" "$DATA_DIR/VolumeUp" "$DATA_DIR/VolumeDown" "$DATA_DIR/Noise"
+
+# Model training
+cd $HOME_DIR/tensorFlow
+source tensorflowEnv/bin/activate
+python simple.py $HOME_DIR/small.csv $HOME_DIR/util/nnSimple.model
+deactivate

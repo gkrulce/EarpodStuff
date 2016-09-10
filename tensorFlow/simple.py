@@ -4,6 +4,7 @@ import tensorflow as tf
 import csv
 from random import shuffle
 import numpy
+import sys
 
 def one_hot(nameList, name):
     assert(nameList.count(name) == 1)
@@ -71,37 +72,45 @@ def dumpToFile(name, npArr, fileName):
             oF.write("{0},{1},{2}\n".format(name, npMat.shape[0], npMat.shape[1]))
             oF.write(iF.read())
 
-
+def main(argv):
+    assert(len(argv) == 2)
+    inputCSVFile = argv[0]
+    outputModelFile = argv[1]
+    print("Reading CSV file located at {0} and writing a model file located at {1}".format(inputCSVFile,
+    outputModelFile))
 # Import data
-data = data_read("/Users/gkrulce/Documents/iListen/small.csv")
+    data = data_read(inputCSVFile)
 
-inputDim = data["FeaturesDim"]
-outputDim = data["ClassesDim"]
+    inputDim = data["FeaturesDim"]
+    outputDim = data["ClassesDim"]
 
 # Model
-x = tf.placeholder(tf.float32, [None, inputDim])
-W = tf.Variable(tf.zeros([inputDim, outputDim]))
-b = tf.Variable(tf.zeros([outputDim]))
-y = tf.nn.softmax(tf.matmul(x, W) + b)
+    x = tf.placeholder(tf.float32, [None, inputDim])
+    W = tf.Variable(tf.zeros([inputDim, outputDim]))
+    b = tf.Variable(tf.zeros([outputDim]))
+    y = tf.nn.softmax(tf.matmul(x, W) + b)
 
 # Loss function
-y_ = tf.placeholder(tf.float32, [None, outputDim])
-cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+    y_ = tf.placeholder(tf.float32, [None, outputDim])
+    cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
 
 # Traning
-train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
-init = tf.initialize_all_variables()
-with tf.Session() as sess:
-    sess.run(init)
-    for i in range(10):
-        batch_xs, batch_ys = data_next(data,200)
-        sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
+    init = tf.initialize_all_variables()
+    with tf.Session() as sess:
+        sess.run(init)
+        for i in range(10):
+            batch_xs, batch_ys = data_next(data,200)
+            sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    test_xs, test_ys = data_test(data)
-    print("RESULT: {0}".format(sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})))
-    with open("nnSimple.model", "w") as f:
-        f.truncate()
-    dumpToFile("W", W.eval(), "nnSimple.model")
-    dumpToFile("b", b.eval(), "nnSimple.model")
+        correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        test_xs, test_ys = data_test(data)
+        print("RESULT: {0}".format(sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})))
+        with open("nnSimple.model", "w") as f:
+            f.truncate()
+        dumpToFile("W", W.eval(), outputModelFile)
+        dumpToFile("b", b.eval(), outputModelFile)
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
