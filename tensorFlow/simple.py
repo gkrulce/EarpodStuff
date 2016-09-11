@@ -69,7 +69,7 @@ def dumpToFile(name, npArr, fileName):
     numpy.savetxt("tmp.model", npMat, delimiter=",")
     with open("tmp.model", "r") as iF:
         with open(fileName, "a") as oF:
-            oF.write("{0},{1},{2}\n".format(name, npMat.shape[0], npMat.shape[1]))
+            oF.write("{0}\t{1}\t{2}\n".format(name, npMat.shape[0], npMat.shape[1]))
             oF.write(iF.read())
 
 def main(argv):
@@ -107,7 +107,7 @@ def main(argv):
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         test_xs, test_ys = data_test(data)
         print("RESULT: {0}".format(sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})))
-        with open("nnSimple.model", "w") as f:
+        with open(outputModelFile, "w") as f:
             f.truncate()
         dumpToFile("W", W.eval(), outputModelFile)
         dumpToFile("b", b.eval(), outputModelFile)

@@ -1,5 +1,6 @@
 *.o
 *.swp
 FrontendTest
+EarpodModelTest
 ConversionScript
 *.model
