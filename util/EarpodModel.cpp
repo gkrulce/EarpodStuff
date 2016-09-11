@@ -20,8 +20,8 @@ EM::Matrix EM::matMul(const EM::Matrix &lhs, const EM::Matrix &rhs) {
         result.at(i) = vector<double>(rhsC);
         for(int j = 0; j < rhsC; ++j) {
             double mult = 0.0;
-            for(int k = 0; k < lhsR; ++k) {
-                mult += lhs.at(k).at(j) * rhs.at(i).at(k);
+            for(int k = 0; k < lhsC; ++k) {
+                mult += lhs.at(i).at(k) * rhs.at(k).at(j);
             }
             result.at(i).at(j) = mult;
         }
@@ -38,7 +38,7 @@ EM::Matrix EM::matAdd(const EM::Matrix &lhs, const EM::Matrix &rhs) {
     for(int i = 0; i < r; ++i) {
         mat.at(i) = vector<double>(c);
         for(int j = 0; j < c; ++j) {
-            mat.at(i).at(j) = lhs.at(i).at(j) + rhs.at(i).at(j);
+            mat[i][j] = lhs.at(i).at(j) + rhs.at(i).at(j);
         }
     }
     return mat;
@@ -47,14 +47,26 @@ EM::Matrix EM::matAdd(const EM::Matrix &lhs, const EM::Matrix &rhs) {
 EM::Matrix EM::softMax(const Matrix &mat) {
     assert(mat.size() == 1);
     vector<double> vec = mat.at(0);
-    auto sum = accumulate(vec.begin(), vec.end(), 0.0);
+    double sum = 0.0;
+    for(auto &val: vec) {
+        sum += exp(val);
+    }
     vector<double> result(vec.size());
     for(int i = 0; i < result.size(); ++i) {
-        result.at(i) = vec.at(i)/sum;
+        result.at(i) = exp(vec.at(i))/sum;
     }
     Matrix matRes;
     matRes.push_back(result);
     return matRes;
+}
+
+void EM::print(const Matrix &mat) {
+    for(int i = 0; i < mat.size(); ++i) {
+        for(int j = 0; j < mat.at(i).size(); ++j) {
+            cout << mat.at(i).at(j) << ",";
+        }
+        cout << endl;
+    }
 }
 
 EM::EarpodModel(std::string fileName) {
@@ -89,7 +101,7 @@ vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
     // TODO use a frame shifting algorithm instead
     vector<EM::Token> returnedTokens;
     buffer_.insert(buffer_.end(), data.begin(), data.end());
-    while(buffer_.size() > frameSize_*2) {
+    while(buffer_.size() >= frameSize_*2) {
         auto beginRange = buffer_.begin();
         auto endRange = buffer_.begin() + frameSize_*2;
         vector<unsigned char> toSend(beginRange, endRange);
@@ -103,6 +115,7 @@ vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
         assert(output.size() == 3);
         auto sum = accumulate(output.begin(), output.end(), 0.0);
         assert(fabs(1.0-sum) < .001);
+        cout << endl;
         auto max = max_element(output.begin(), output.end());
         if(max == output.begin()) {
             returnedTokens.push_back(EM::Token::VOLUME_UP);
@@ -117,6 +130,9 @@ vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
     return returnedTokens;
 }
 std::vector<EM::Token> EM::readEOF() {
+    if(buffer_.size() == 0){
+        return std::vector<EM::Token>();
+    }
     vector<unsigned char> zeros(frameSize_*2 - buffer_.size(), '\0');
     return read(zeros);
 }
