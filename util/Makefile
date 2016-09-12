@@ -1,27 +1,25 @@
-FFT_INCLUDE = $(HOME_DIR)/fftLib/local/include/
-FFT_LIBRARY = $(HOME_DIR)/fftLib/local/lib/
-
 CC = g++
 CFLAGS = -Wall -std=c++11
-LFLAGS = -lfftw3 -lm 
 SOURCES = ConversionScript.cpp Frontend.cpp FrontendTest.cpp EarpodModel.cpp EarpodModelTest.cpp
-OBJECTS=$(SOURCES:.cpp=.o)
-INCLUDE = -I$(FFT_INCLUDE)
-L_INCLUDE = -L$(FFT_LIBRARY)
+OBJECTS=$(SOURCES:.cpp=.o) kiss_fft.o
 
 all: $(SOURCES) FrontendTest ConversionScript EarpodModelTest
 
 EarpodModelTest: $(OBJECTS)
-	$(CC) $(CFLAGS) $(INCLUDE) EarpodModelTest.o Frontend.o EarpodModel.o $(L_INCLUDE) $(LFLAGS) -o EarpodModelTest
+	$(CC) $(CFLAGS) EarpodModelTest.o Frontend.o EarpodModel.o kiss_fft.o -o EarpodModelTest
 
 FrontendTest: $(OBJECTS)
-	$(CC) $(CFLAGS) $(INCLUDE) FrontendTest.o Frontend.o $(L_INCLUDE) $(LFLAGS) -o FrontendTest
+	$(CC) $(CFLAGS) FrontendTest.o Frontend.o kiss_fft.o -o FrontendTest
 
 ConversionScript: $(OBJECTS)
-	$(CC) $(CFLAGS) $(INCLUDE) ConversionScript.o Frontend.o $(L_INCLUDE) $(LFLAGS) -o ConversionScript
+	$(CC) $(CFLAGS) ConversionScript.o Frontend.o kiss_fft.o -o ConversionScript
+
+kiss_fft.o:
+	$(MAKE) asm -C kiss_fft130/
+	$(CC) -c $(CFLAGS) kiss_fft130/kiss_fft.s -o kiss_fft.o
 
 .cpp.o:
-	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 clean:
 	rm -f *.o ConversionScript FrontendTest

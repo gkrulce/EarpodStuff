@@ -9,15 +9,15 @@ using namespace std;
 Frontend::Frontend(int sampleRate, int frameSize): sampleRate_(sampleRate), frameSize_(frameSize),
 fftOutputSize_(frameSize_/2+1), bucketSize_(fftOutputSize_/buckets_) {
     assert(fftOutputSize_ % buckets_ == 0); // Makes the math easier :)
-    in_ = fftw_alloc_real(frameSize_);
-    out_ = fftw_alloc_complex(fftOutputSize_);
-    plan_ = fftw_plan_dft_r2c_1d(frameSize_, in_, out_, FFTW_ESTIMATE);
+    cfg_ = kiss_fft_alloc( frameSize_, 0,0,0 );
+    fin_ = (kiss_fft_cpx *) malloc(sizeof(kiss_fft_cpx) * frameSize_);
+    fout_ = (kiss_fft_cpx *) malloc(sizeof(kiss_fft_cpx) * frameSize_);
 }
 
 Frontend::~Frontend() {
-    fftw_destroy_plan(plan_);
-    fftw_free(out_);
-    fftw_free(in_);
+    free(fout_);
+    free(fin_);
+    free(cfg_);
 }
 
 vector<double> Frontend::calculate(const vector<unsigned char> &samples) {
@@ -27,17 +27,16 @@ vector<double> Frontend::calculate(const vector<unsigned char> &samples) {
     for(int i = 0; i < frameSize_; ++i) {
         char lsb = samples.at(2*i);
         char msb = samples.at(2*i+1);
-        short s = (short) ((lsb << 8) | msb);
-        in_[i] = s/32768.0;
-        assert(in_[i] < 1.0 && in_[i] > -1.0);
+        double d = ((double) ((lsb << 8) | msb))/32768.0;
+        fin_[i].r = d;
+        fin_[i].i = 0;
     }
-    plan_ = fftw_plan_dft_r2c_1d(frameSize_, in_, out_, FFTW_ESTIMATE);
-    fftw_execute(plan_);
+    kiss_fft(cfg_, fin_, fout_);
     vector<double> realOutput(fftOutputSize_);
     vector<double> complexOutput(fftOutputSize_);
     for(int i = 0; i < fftOutputSize_; ++i) {
-        realOutput.at(i) = fabs(out_[i][0]);
-        complexOutput.at(i) = fabs(out_[i][1]);
+        realOutput.at(i) = fabs(fout_[i].r);
+        complexOutput.at(i) = fabs(fout_[i].i);
     }
 
     // TODO Maybe capture complex output as well?

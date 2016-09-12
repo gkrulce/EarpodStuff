@@ -1,9 +1,7 @@
 #pragma once
 
 #include <vector>
-
-// TODO forward declare these
-#include <fftw3.h>
+#include "kiss_fft130/kiss_fft.h"
 
 class Frontend {
     public:
@@ -17,7 +15,7 @@ class Frontend {
     const int fftOutputSize_;
     const int buckets_{1025};
     const int bucketSize_;
-    fftw_plan plan_;
-    double *in_;
-    fftw_complex *out_;
+    kiss_fft_cfg cfg_;
+    kiss_fft_cpx *fin_;
+    kiss_fft_cpx *fout_;
 };
