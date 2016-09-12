@@ -9,10 +9,8 @@ public class JEarpodModel {
         VOLUME_DOWN,
         NOISE
     }
-    private String fileName_;
 
-    public JEarpodModel(String fileName) {
-        fileName_ = fileName;
+    public JEarpodModel() {
     }
 
     public Token[] read(short[] samples) {

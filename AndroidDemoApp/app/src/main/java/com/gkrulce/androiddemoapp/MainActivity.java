@@ -14,7 +14,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 420);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(recorder != null) {
+            recorder.stop();
+            recorder = null;
+        }
     }
     @Override
     public void onRequestPermissionsResult(int requestCode,

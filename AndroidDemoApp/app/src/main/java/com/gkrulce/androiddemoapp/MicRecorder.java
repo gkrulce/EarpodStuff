@@ -20,7 +20,7 @@ public class MicRecorder {
 
     MicRecorder(VolumeChangeEvent event) {
         this.event = event;
-        model_ = new JEarpodModel("nnSimple.model");
+        model_ = new JEarpodModel();
         System.loadLibrary("EarpodModel");
         mic = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate_, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, sampleRate_);
         if (mic.getState() == AudioRecord.STATE_INITIALIZED) {
@@ -42,6 +42,11 @@ public class MicRecorder {
         Log.v(TAG, "stop()");
         if (backgroundThread != null) {
             backgroundThread.interrupt();
+            try {
+                backgroundThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             backgroundThread = null;
         }
     }
@@ -59,7 +64,6 @@ public class MicRecorder {
             mic.startRecording();
             while (!backgroundThread.isInterrupted()) {
                 mic.read(buffer, 0, frameSize_);
-                Log.v(TAG, "Read some audio");
                 JEarpodModel.Token[] tokens = model_.read(buffer);
                 for(int i = 0; i < tokens.length; ++i) {
                     if(tokens[i] == JEarpodModel.Token.VOLUME_DOWN) {

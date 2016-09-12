@@ -13,7 +13,7 @@ Java_com_gkrulce_androiddemoapp_JEarpodModel_readJni(JNIEnv *env, jobject instan
         toSend.at(2 * i) = lsb;
         toSend.at(2 * i + 1) = msb;
     }
-    EarpodModel model("nnSimple.model");
+    EarpodModel model;
     std::vector<EarpodModel::Token> emBeg = model.read(toSend);
     std::vector<EarpodModel::Token> emEnd = model.readEOF();
     std::vector<EarpodModel::Token> emRet;
