@@ -20,14 +20,14 @@ public class MicRecorder {
 
     MicRecorder(VolumeChangeEvent event) {
         this.event = event;
+        model_ = new JEarpodModel("nnSimple.model");
+        System.loadLibrary("EarpodModel");
         mic = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate_, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, sampleRate_);
         if (mic.getState() == AudioRecord.STATE_INITIALIZED) {
             Log.i(TAG, "RECORDING FROM MIC");
         } else {
             Log.e(TAG, "NOT RECORDING FROM MIC");
-            return;
         }
-        model_ = new JEarpodModel("nnSimple.model");
     }
 
     void start() {
