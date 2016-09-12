@@ -12,7 +12,7 @@ class EarpodModel {
             VOLUME_DOWN,
             NOISE
         };
-        EarpodModel(std::string fileName);
+        EarpodModel();
         ~EarpodModel() = default;
         std::vector<Token> read(const std::vector<unsigned char> &data);
         std::vector<Token> readEOF();

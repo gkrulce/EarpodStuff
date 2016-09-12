@@ -4,3 +4,4 @@ FrontendTest
 EarpodModelTest
 ConversionScript
 *.model
+nn.hpp

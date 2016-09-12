@@ -26,5 +26,8 @@ DATA_DIR="/Users/gkrulce/Desktop/Audio Samples"
 # Model training
 cd $HOME_DIR/tensorFlow
 source tensorflowEnv/bin/activate
-python simple.py $HOME_DIR/small.csv $HOME_DIR/util/nnSimple.model
+python simple.py $HOME_DIR/small.csv $HOME_DIR/util/nn.hpp
 deactivate
+
+cd $HOME_DIR
+util/EarpodModelTest

@@ -65,12 +65,17 @@ def data_test(data):
     return ([val["features"] for val in toTest], [val["class"] for val in toTest])
 
 def dumpToFile(name, npArr, fileName):
-    npMat = numpy.asmatrix(npArr)
-    numpy.savetxt("tmp.model", npMat, delimiter=",")
-    with open("tmp.model", "r") as iF:
-        with open(fileName, "a") as oF:
-            oF.write("{0}\t{1}\t{2}\n".format(name, npMat.shape[0], npMat.shape[1]))
-            oF.write(iF.read())
+    npShape = numpy.shape(npArr)
+    rows = numpy.shape(npArr)[0]
+    cols = numpy.shape(npArr)[1]
+
+    with open(fileName, "a") as oF:
+        oF.write("#define {0}_ROWS {1}\n".format(name, rows))
+        oF.write("#define {0}_COLS {1}\n".format(name, cols))
+        oF.write("static float {0}_DATA[{1}][{2}] = {{ \n".format(name, rows, cols))
+        for l in npArr:
+            oF.write("{{{0}}}, \n".format(",".join([str(val) for val in l])))
+        oF.write("}; \n");
 
 def main(argv):
     assert(len(argv) == 2)
@@ -110,7 +115,7 @@ def main(argv):
         with open(outputModelFile, "w") as f:
             f.truncate()
         dumpToFile("W", W.eval(), outputModelFile)
-        dumpToFile("b", b.eval(), outputModelFile)
+        dumpToFile("B", [b.eval()], outputModelFile)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

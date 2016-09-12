@@ -1,4 +1,5 @@
 #include "EarpodModel.hpp"
+#include "nn.hpp"
 #include <fstream>
 #include <iostream>
 #include <assert.h>
@@ -69,33 +70,24 @@ void EM::print(const Matrix &mat) {
     }
 }
 
-EM::EarpodModel(std::string fileName) {
-    ifstream inFile (fileName);
-    string t;
-    while(true) {
-        string name;
-        int r,c;
-        inFile >> name >> r >> c;
-        if(inFile.eof()) {
-            return;
+EM::EarpodModel() {
+    EM::Matrix WMat(W_ROWS);
+    for(int i = 0; i < W_ROWS; ++i) {
+        WMat.at(i) = vector<double>(W_COLS);
+        for(int j = 0; j < W_COLS; ++j) {
+            WMat.at(i).at(j) = W_DATA[i][j];
         }
-        cout << "Read matrix " << name << " with dimensions " << r << "x" << c << endl;
-        getline(inFile, t);
-        EM::Matrix mat (r);
-        for(int i = 0; i < r; ++i) {
-            mat[i] = vector<double>(c);
-            string line;
-            getline(inFile, line);
-            stringstream lineSS(line);
-            string tok;
-            for(int j = 0; j < c; ++j) {
-                getline(lineSS, tok, ',');
-                mat[i][j] = atof(tok.c_str());
-            }
-        }
-        mats_[name] = mat;
     }
+    mats_["W"] = WMat;
 
+    EM::Matrix BMat(B_ROWS);
+    for(int i = 0; i < B_ROWS; ++i) {
+        BMat.at(i) = vector<double>(B_COLS);
+        for(int j = 0; j < B_COLS; ++j) {
+            BMat.at(i).at(j) = B_DATA[i][j];
+        }
+    }
+    mats_["B"] = BMat;
 }
 vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
     // TODO use a frame shifting algorithm instead
@@ -109,7 +101,7 @@ vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
         vector<double> featuresVector = frontend_.calculate(toSend);
         EM::Matrix features;
         features.push_back(featuresVector);
-        Matrix outputMat = softMax(matAdd(matMul(features, mats_["W"]), mats_["b"]));
+        Matrix outputMat = softMax(matAdd(matMul(features, mats_["W"]), mats_["B"]));
         assert(outputMat.size() == 1);
         std::vector<double> output= outputMat.at(0);
         assert(output.size() == 3);
