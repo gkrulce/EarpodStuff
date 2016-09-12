@@ -5,7 +5,7 @@
 #include <deque>
 
 class EarpodModel {
-    typedef std::vector<std::vector<double>> Matrix;
+    typedef std::vector<std::vector<double> > Matrix;
     public:
         enum Token {
             VOLUME_UP,

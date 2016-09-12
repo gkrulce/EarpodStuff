@@ -90,7 +90,7 @@ EM::EarpodModel(std::string fileName) {
             string tok;
             for(int j = 0; j < c; ++j) {
                 getline(lineSS, tok, ',');
-                mat[i][j] = stod(tok);
+                mat[i][j] = atof(tok.c_str());
             }
         }
         mats_[name] = mat;

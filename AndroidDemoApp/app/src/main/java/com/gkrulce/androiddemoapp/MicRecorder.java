@@ -13,20 +13,21 @@ public class MicRecorder {
     private final static String TAG = "MicRecorder";
     private final static int frameSize_ = 2048;
     private final static int sampleRate_ = 44100;
-    private AudioManager audioManager;
     private AudioRecord mic;
     private VolumeChangeEvent event;
     private Thread backgroundThread = null;
+    private JEarpodModel model_;
 
     MicRecorder(VolumeChangeEvent event) {
-        mic = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate_, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, 44100);
         this.event = event;
+        mic = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate_, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, sampleRate_);
         if (mic.getState() == AudioRecord.STATE_INITIALIZED) {
             Log.i(TAG, "RECORDING FROM MIC");
         } else {
             Log.e(TAG, "NOT RECORDING FROM MIC");
             return;
         }
+        model_ = new JEarpodModel("nnSimple.model");
     }
 
     void start() {
@@ -50,19 +51,25 @@ public class MicRecorder {
 
         @Override
         public void run() {
-            mic = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate_, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, 44100);
-            if (mic.getState() == AudioRecord.STATE_INITIALIZED) {
-                Log.i(TAG, "RECORDING FROM MIC");
-            } else {
-                Log.e(TAG, "NOT RECORDING FROM MIC");
+            short[] buffer = new short[frameSize_];
+            if(mic.getState() != mic.STATE_INITIALIZED) {
+                Log.v(TAG, "Can't record from uninitialized mic!");
                 return;
             }
-            short[] buffer = new short[frameSize_];
             mic.startRecording();
             while (!backgroundThread.isInterrupted()) {
                 mic.read(buffer, 0, frameSize_);
                 Log.v(TAG, "Read some audio");
-                // Feed into NN
+                JEarpodModel.Token[] tokens = model_.read(buffer);
+                for(int i = 0; i < tokens.length; ++i) {
+                    if(tokens[i] == JEarpodModel.Token.VOLUME_DOWN) {
+                        event.onVolumeDown();
+                    }
+
+                    if(tokens[i] == JEarpodModel.Token.VOLUME_UP) {
+                        event.onVolumeUp();
+                    }
+                }
             }
             mic.release();
         }
