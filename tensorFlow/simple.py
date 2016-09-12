@@ -100,11 +100,11 @@ def main(argv):
     cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
 
 # Traning
-    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
+    train_step = tf.train.GradientDescentOptimizer(0.001).minimize(cross_entropy)
     init = tf.initialize_all_variables()
     with tf.Session() as sess:
         sess.run(init)
-        for i in range(10):
+        for i in range(75):
             batch_xs, batch_ys = data_next(data,200)
             sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
