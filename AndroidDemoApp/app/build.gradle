@@ -21,6 +21,8 @@ model {
 
         ndk {
             moduleName "EarpodModel"
+            stl "c++_static"
+            ldLibs.addAll(['atomic'])
         }
     }
 }
