@@ -22,7 +22,7 @@ model {
         ndk {
             moduleName "EarpodModel"
             stl "gnustl_static"
-            ldLibs.addAll(['atomic'])
+            ldLibs.addAll(['atomic', 'log'])
             cppFlags.add("-std=c++11")
         }
     }

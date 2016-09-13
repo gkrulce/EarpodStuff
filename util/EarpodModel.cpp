@@ -47,14 +47,14 @@ EM::Matrix EM::matAdd(const EM::Matrix &lhs, const EM::Matrix &rhs) {
 
 EM::Matrix EM::softMax(const Matrix &mat) {
     assert(mat.size() == 1);
-    vector<double> vec = mat.at(0);
-    double sum = 0.0;
-    for(auto &val: vec) {
-        sum += exp(val);
+    vector<double> result = mat.at(0);
+    double max = *max_element(result.begin(), result.end());
+    for(auto &val: result) {
+        val = exp(val - max);
     }
-    vector<double> result(vec.size());
-    for(int i = 0; i < result.size(); ++i) {
-        result.at(i) = exp(vec.at(i))/sum;
+    double sum = accumulate(result.begin(), result.end(), 0.0);
+    for(auto &val: result) {
+        val = val/sum;
     }
     Matrix matRes;
     matRes.push_back(result);
@@ -107,7 +107,6 @@ vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
         assert(output.size() == 3);
         auto sum = accumulate(output.begin(), output.end(), 0.0);
         assert(fabs(1.0-sum) < .001);
-        cout << endl;
         auto max = max_element(output.begin(), output.end());
         if(max == output.begin()) {
             returnedTokens.push_back(EM::Token::VOLUME_UP);

@@ -22,7 +22,7 @@ Frontend::~Frontend() {
 
 vector<double> Frontend::calculate(const vector<unsigned char> &samples) {
     assert(sampleRate_ == 44100); // TODO delete me
-    assert(samples.size() == 2 * frameSize_);
+    assert(samples.size() == getSampleSize());
     for(int i = 0; i < frameSize_; ++i) {
         char lsb = samples.at(2*i);
         char msb = samples.at(2*i+1);

@@ -32,6 +32,10 @@ with open("events.csv", "r") as e:
             if vals[0] == "Shift":
                 kShift = int(vals[1])
                 continue
+            if kShift == 0:
+               print ("Warning: must set the shift of this data set!")
+               assert(false)
+
             startIdx = int(float(vals[1]) * kSampleRate) + kShift # In samples
             while(noiseIdx + kFrameSize < startIdx):
                 with open("Noise/Audio-{0}.pcm".format(noiseCnt), "w") as f:
