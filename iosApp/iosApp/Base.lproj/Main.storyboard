@@ -17,61 +17,27 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Bq7-Tb-Wav">
-                                <rect key="frame" x="20" y="28" width="600" height="600"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My First App!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5b3-Kc-qUT">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="lgu-G9-YC4"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="apple_earbuds01.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="775-tb-o0E">
-                                        <rect key="frame" x="0.0" y="62" width="600" height="496"/>
-                                    </imageView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ugv-Uz-ghv">
-                                        <rect key="frame" x="189" y="570" width="222" height="30"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1gu-Tk-3Jg">
-                                                <rect key="frame" x="0.0" y="0.0" width="112" height="30"/>
-                                                <state key="normal" title="Start Recording!"/>
-                                                <connections>
-                                                    <action selector="StartButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OXS-qL-4Ko"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zoF-ka-6VD">
-                                                <rect key="frame" x="112" y="0.0" width="110" height="30"/>
-                                                <state key="normal" title="Stop Recording!"/>
-                                                <connections>
-                                                    <action selector="StopButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="EHL-lx-W2I"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="775-tb-o0E" firstAttribute="width" secondItem="Bq7-Tb-Wav" secondAttribute="width" id="1Nh-Hl-aD4"/>
-                                    <constraint firstItem="5b3-Kc-qUT" firstAttribute="width" secondItem="Bq7-Tb-Wav" secondAttribute="width" id="x2K-nR-mv3"/>
-                                </constraints>
-                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="89a-C6-B2D">
+                                <rect key="frame" x="229" y="247" width="147" height="30"/>
+                                <state key="normal" title="Start button!"/>
+                                <connections>
+                                    <action selector="StartButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="SQy-Cs-Pyg"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mto-90-1wB">
+                                <rect key="frame" x="252" y="285" width="97" height="30"/>
+                                <state key="normal" title="Stop button!"/>
+                                <connections>
+                                    <action selector="StopButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="iPl-qg-8gz"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="Bq7-Tb-Wav" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="2by-kN-kOh"/>
-                            <constraint firstItem="Bq7-Tb-Wav" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="9GQ-yN-46g"/>
-                            <constraint firstItem="Bq7-Tb-Wav" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="JTX-N6-gfw"/>
-                            <constraint firstItem="Bq7-Tb-Wav" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="Ueu-jA-pDL"/>
-                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="140" y="282"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="apple_earbuds01.jpg" width="2818" height="2013"/>
-    </resources>
 </document>

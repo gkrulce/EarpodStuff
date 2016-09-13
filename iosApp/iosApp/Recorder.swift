@@ -142,8 +142,10 @@ class Recorder : NSObject, AVAudioRecorderDelegate {
         
         do {
             let eventsFile = self.getDocumentsDirectory().URLByAppendingPathComponent("events.csv")
+            print("Writing events to file: \(eventsFile)")
             try eventString.writeToURL(eventsFile, atomically: false, encoding: NSUTF8StringEncoding)
             let metadataFile = self.getDocumentsDirectory().URLByAppendingPathComponent("metadata.txt")
+            print("Writing metadata to file: \(metadataFile)")
             try metadataString.writeToURL(metadataFile, atomically: false, encoding: NSUTF8StringEncoding)
         }
         catch {
@@ -162,13 +164,14 @@ class Recorder : NSObject, AVAudioRecorderDelegate {
             var event: Event
             if recordingSession.outputVolume < prevVolume {
                 print ("Volume went down!")
-                statusCb(status: "Saw volume up!")
+                statusCb(status: "Saw volume down!")
                 event = Event(event:"VolDown", time:currTime)
             }else {
                 print ("Volume went up!")
-                statusCb(status: "Saw volume down!")
+                statusCb(status: "Saw volume up!")
                 event = Event(event:"VolUp", time:currTime)
             }
+            prevVolume = recordingSession.outputVolume;
             events.append(event)
             
         }

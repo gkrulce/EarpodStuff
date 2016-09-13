@@ -13,13 +13,13 @@ class ViewController: UIViewController {
     let recorder: Recorder = Recorder(statusCb:{(status: String) in
         print("statusCb: \(status)")
     })
-
     @IBAction func StartButtonPressed(sender: AnyObject) {
         recorder.startRecording()
-            }
+    }
     @IBAction func StopButtonPressed(sender: AnyObject) {
         recorder.stopRecording()
     }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
