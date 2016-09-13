@@ -5,13 +5,16 @@
 
 class Frontend {
     public:
-    Frontend(int sampleRate, int frameSize);
+    Frontend(int sampleRate);
     ~Frontend();
     // Give big endian 16-bit pcm
     std::vector<double> calculate(const std::vector<unsigned char> &samples);
+    int getSampleSize() {
+        return 2 * frameSize_;
+    }
     private:
     const int sampleRate_;
-    const int frameSize_; // In samples
+    const int frameSize_{2205}; // In samples
     const int fftOutputSize_;
     const int buckets_{1103};
     const int bucketSize_;

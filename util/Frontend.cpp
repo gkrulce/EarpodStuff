@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Frontend::Frontend(int sampleRate, int frameSize): sampleRate_(sampleRate), frameSize_(frameSize),
+Frontend::Frontend(int sampleRate): sampleRate_(sampleRate),
 fftOutputSize_(frameSize_/2+1), bucketSize_(fftOutputSize_/buckets_) {
     assert(fftOutputSize_ % buckets_ == 0); // Makes the math easier :)
     cfg_ = kiss_fft_alloc( frameSize_, 0,0,0 );
@@ -22,7 +22,6 @@ Frontend::~Frontend() {
 
 vector<double> Frontend::calculate(const vector<unsigned char> &samples) {
     assert(sampleRate_ == 44100); // TODO delete me
-    assert(frameSize_ == 4410); // Ditto
     assert(samples.size() == 2 * frameSize_);
     for(int i = 0; i < frameSize_; ++i) {
         char lsb = samples.at(2*i);

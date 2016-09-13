@@ -1,31 +1,46 @@
 #!/usr/bin/python
 import os
 
+kSampleRate = 44100 # 44100 samples per second
+kSampleWidth = 2 # 2 bytes per sample
+kFrameSize = 2205 # In samples
+kShift = 0 # In samples
+
 def createDir(dirName):
     if not os.path.exists(dirName):
             os.makedirs(dirName)
-kSampleRate = 44100 # 44100 samples per second
-kSampleWidth = 2 # 2 bytes per sample
-kFrameSize = 8820
+
+def toBytes(idx):
+    return idx * kSampleWidth
+
 print("Execute this script in the same folder as events.csv & recording.pcm")
 createDir("VolumeUp")
 createDir("VolumeDown")
 createDir("Noise")
 volUpCnt = 0
 volDownCnt = 0
+noiseCnt = 0
+noiseIdx = 0 # In samples
 with open("events.csv", "r") as e:
     with open("recording.pcm", "r") as r:
         audio = r.read()
         print("Audio length: {0}".format(len(audio)))
         assert(len(audio) % kSampleWidth == 0)
-        currIdx = 0 # In samples
         for l in e:
             vals = l.split("\t")
             assert(len(vals) == 2)
-            startIdx = int(float(vals[1]) * kSampleRate * kSampleWidth)
-            if(startIdx % 2 == 1):
-                startIdx -= 1
-            sample = audio[startIdx:startIdx+kFrameSize]
+            if vals[0] == "Shift":
+                kShift = int(vals[1])
+                continue
+            startIdx = int(float(vals[1]) * kSampleRate) + kShift # In samples
+            while(noiseIdx + kFrameSize < startIdx):
+                with open("Noise/Audio-{0}.pcm".format(noiseCnt), "w") as f:
+                    f.write(audio[toBytes(noiseIdx):toBytes(noiseIdx + kFrameSize)])
+                noiseCnt += 1
+                noiseIdx += kFrameSize
+
+            noiseIdx = startIdx + kFrameSize
+            sample = audio[toBytes(startIdx):toBytes(startIdx + kFrameSize)]
             if(vals[0] == "VolUp"):
                 with open("VolumeUp/Audio-{0}.pcm".format(volUpCnt), "w") as f:
                     f.write(sample)
@@ -40,3 +55,4 @@ with open("events.csv", "r") as e:
 
 print("Wrote {0} volume up samples".format(volUpCnt))
 print("Wrote {0} volume down samples".format(volDownCnt))
+print("Wrote {0} noise samples".format(noiseCnt))

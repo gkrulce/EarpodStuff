@@ -30,7 +30,7 @@ def data_read(fileName):
             arrSize = len(csv)
             arr.append({"class":csv[0], "features":csv[1:]})
         
-        outputClasses = list(set([val["class"] for val in arr]))
+        outputClasses = ["VolUp", "VolDown", "Noise"]
         print "Output classes: {0}".format(outputClasses)
         for idx, val in enumerate(arr):
             arr[idx]["class"] = one_hot(outputClasses, arr[idx]["class"])
@@ -100,19 +100,21 @@ def main(argv):
     cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
 
 # Traning
-    train_step = tf.train.GradientDescentOptimizer(0.001).minimize(cross_entropy)
+    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
     init = tf.initialize_all_variables()
     with tf.Session() as sess:
         sess.run(init)
-        for i in range(1000):
+        for i in range(2500):
             batch_xs, batch_ys = data_next(data,200)
             sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-            if(i % 50 == 0):
+            if i % 50 == 0:
                 correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
                 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
                 test_xs, test_ys = data_test(data)
                 print("RESULT: {0}".format(sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})))
+                sys.stdout.flush()
+
         with open(outputModelFile, "w") as f:
             f.truncate()
         dumpToFile("W", W.eval(), outputModelFile)

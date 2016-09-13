@@ -22,8 +22,8 @@ class EarpodModel {
     static Matrix matAdd(const Matrix &lhs, const Matrix &rhs);
     static Matrix softMax(const Matrix &mat);
     static void print(const Matrix &mat);
-    const int frameSize_ = 4410;
+    Frontend frontend_ {44100};
+    const int sampleSize_;
     std::map<std::string, Matrix> mats_;
-    Frontend frontend_ {44100, frameSize_};
     std::deque<unsigned char> buffer_;
 };

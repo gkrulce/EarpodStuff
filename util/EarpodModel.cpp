@@ -70,7 +70,7 @@ void EM::print(const Matrix &mat) {
     }
 }
 
-EM::EarpodModel() {
+EM::EarpodModel() : sampleSize_(frontend_.getSampleSize()) {
     EM::Matrix WMat(W_ROWS);
     for(int i = 0; i < W_ROWS; ++i) {
         WMat.at(i) = vector<double>(W_COLS);
@@ -93,9 +93,9 @@ vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
     // TODO use a frame shifting algorithm instead
     vector<EM::Token> returnedTokens;
     buffer_.insert(buffer_.end(), data.begin(), data.end());
-    while(buffer_.size() >= frameSize_*2) {
+    while(buffer_.size() >= sampleSize_) {
         auto beginRange = buffer_.begin();
-        auto endRange = buffer_.begin() + frameSize_*2;
+        auto endRange = buffer_.begin() + sampleSize_;
         vector<unsigned char> toSend(beginRange, endRange);
         buffer_.erase(beginRange, endRange);
         vector<double> featuresVector = frontend_.calculate(toSend);
@@ -112,9 +112,9 @@ vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
         if(max == output.begin()) {
             returnedTokens.push_back(EM::Token::VOLUME_UP);
         }else if(max == output.begin() + 1) {
-            returnedTokens.push_back(EM::Token::NOISE);
-        }else if(max == output.begin() + 2) {
             returnedTokens.push_back(EM::Token::VOLUME_DOWN);
+        }else if(max == output.begin() + 2) {
+            returnedTokens.push_back(EM::Token::NOISE);
         }else {
             assert(false);
         }
@@ -125,6 +125,6 @@ std::vector<EM::Token> EM::readEOF() {
     if(buffer_.size() == 0){
         return std::vector<EM::Token>();
     }
-    vector<unsigned char> zeros(frameSize_*2 - buffer_.size(), '\0');
+    vector<unsigned char> zeros(sampleSize_ - buffer_.size(), '\0');
     return read(zeros);
 }
