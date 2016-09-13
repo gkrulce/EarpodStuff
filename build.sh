@@ -20,7 +20,7 @@ fi
 cd $HOME_DIR/util
 make clean
 make
-DATA_DIR="/Users/gkrulce/Desktop/Audio Samples"
+DATA_DIR="$HOME_DIR/data/MondayNight"
 ./ConversionScript "$HOME_DIR/small.csv" "$DATA_DIR/VolumeUp" "$DATA_DIR/VolumeDown" "$DATA_DIR/Noise"
 
 # Model training

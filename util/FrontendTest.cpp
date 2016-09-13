@@ -9,7 +9,7 @@ int main() {
     const int sampleRate = 44100;
     const float frequency = 30000;
     const float samplesPerCycle = sampleRate/frequency;
-    const int frameSize = 2048;
+    const int frameSize = 8820;
     vector<unsigned char> in(2*frameSize);
     for(int i = 0; i < in.size(); i += 2) {
         short s = (short) (32767 * sin(2*i*PI/samplesPerCycle));

@@ -13,7 +13,7 @@ class Frontend {
     const int sampleRate_;
     const int frameSize_; // In samples
     const int fftOutputSize_;
-    const int buckets_{1025};
+    const int buckets_{1103};
     const int bucketSize_;
     kiss_fft_cfg cfg_;
     kiss_fft_cpx *fin_;

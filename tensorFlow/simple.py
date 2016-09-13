@@ -104,14 +104,15 @@ def main(argv):
     init = tf.initialize_all_variables()
     with tf.Session() as sess:
         sess.run(init)
-        for i in range(75):
+        for i in range(1000):
             batch_xs, batch_ys = data_next(data,200)
             sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-        correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        test_xs, test_ys = data_test(data)
-        print("RESULT: {0}".format(sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})))
+            if(i % 50 == 0):
+                correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
+                accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+                test_xs, test_ys = data_test(data)
+                print("RESULT: {0}".format(sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})))
         with open(outputModelFile, "w") as f:
             f.truncate()
         dumpToFile("W", W.eval(), outputModelFile)

@@ -7,7 +7,7 @@ using namespace std;
 
 int main() {
     EarpodModel model;
-    std::ifstream testFile("/Users/gkrulce/Desktop/Audio Samples/VolumeUp/Audio-0.pcm", std::ios::binary);
+    std::ifstream testFile("/Users/gkrulce/Desktop/RealAudio.pcm", std::ios::binary);
     std::vector<unsigned char> fileContents((std::istreambuf_iterator<char>(testFile)),
                                    std::istreambuf_iterator<char>());
     std::vector<unsigned char> zeros(32000, '\0');

@@ -64,7 +64,7 @@ int main(int argc, char * argv[]) {
     string volDownDir = argv[3];
     string noiseDir = argv[4];
 
-    Frontend frontend(44100, 2048);
+    Frontend frontend(44100, 4410);
 
     ofstream outFile;
     outFile.open(outCSVFile);

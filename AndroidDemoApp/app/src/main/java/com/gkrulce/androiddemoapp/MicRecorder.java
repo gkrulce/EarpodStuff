@@ -11,7 +11,7 @@ import android.util.Log;
  */
 public class MicRecorder {
     private final static String TAG = "MicRecorder";
-    private final static int frameSize_ = 2048;
+    private final static int frameSize_ = 4410;
     private final static int sampleRate_ = 44100;
     private AudioRecord mic;
     private VolumeChangeEvent event;
