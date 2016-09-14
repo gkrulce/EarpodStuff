@@ -64,7 +64,13 @@ public class MicRecorder {
             mic.startRecording();
             while (!backgroundThread.isInterrupted()) {
                 mic.read(buffer, 0, frameSize_);
+                long startTime = System.currentTimeMillis();
                 JEarpodModel.Token[] tokens = model_.read(buffer);
+                long endTime = System.currentTimeMillis();
+                double RTF = ((endTime - startTime)/1000.0)/((double) sampleRate_ / frameSize_);
+                if(RTF > 1.0) {
+                    Log.w(TAG, "RTF exceeded 1!!! " + RTF);
+                }
                 for(int i = 0; i < tokens.length; ++i) {
                     if(tokens[i] == JEarpodModel.Token.VOLUME_DOWN) {
                         event.onVolumeDown();
