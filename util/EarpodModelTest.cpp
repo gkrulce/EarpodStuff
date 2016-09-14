@@ -7,11 +7,12 @@ using namespace std;
 
 int main() {
     EarpodModel model;
-    std::ifstream testFile("/Users/gkrulce/Documents/iListen/data/MondayNight/recording.pcm", std::ios::binary);
+    std::ifstream testFile("/Users/gkrulce/Downloads/Record_0008.raw", std::ios::binary);
     std::vector<unsigned char> fileContents((std::istreambuf_iterator<char>(testFile)),
                                    std::istreambuf_iterator<char>());
-    std::vector<unsigned char> zeros(32000, '\0');
+    std::vector<unsigned char> zeros(32000, '\1');
     auto result = model.read(fileContents);
+    //auto result = model.read(zeros);
     auto flushed = model.readEOF();
     result.insert(result.end(), flushed.begin(), flushed.end());
     for(auto &val: result) {

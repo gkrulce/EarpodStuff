@@ -8,7 +8,6 @@ using namespace std;
 
 Frontend::Frontend(int sampleRate): sampleRate_(sampleRate),
 fftOutputSize_(frameSize_/2+1), bucketSize_(fftOutputSize_/buckets_) {
-    assert(fftOutputSize_ % buckets_ == 0); // Makes the math easier :)
     cfg_ = kiss_fft_alloc( frameSize_, 0,0,0 );
     fin_ = (kiss_fft_cpx *) malloc(sizeof(kiss_fft_cpx) * frameSize_);
     fout_ = (kiss_fft_cpx *) malloc(sizeof(kiss_fft_cpx) * frameSize_);

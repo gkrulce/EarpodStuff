@@ -9,3 +9,13 @@ First attempt (9/8/16)
     Update: Able to get 100% accuracy by decreasing the learning rate to .01. It still over-fits, but that's a pretty easy
     problem to fix.
 
+A couple more (9/14/16)
+    I was getting ~.90 accuracy with training, but the same model would get close to 0% with actual data. I guessed that
+    this was because I was using every frequency as a feature and this poorly generalizes to different microphones. As a
+    result, I tweaked the bucketSize_ parameter and was able to get similar accuracy with much fewer features that
+    generalizes across devices.
+    1103 buckets: .88
+    58 buckets: .88
+    38 buckets: .87
+    19 buckets: .86
+    I'll do better feature selection so that this model can generalize across devices.
