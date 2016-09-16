@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import shutil
 
 kSampleRate = 44100 # 44100 samples per second
 kSampleWidth = 2 # 2 bytes per sample
@@ -14,8 +15,11 @@ def toBytes(idx):
     return idx * kSampleWidth
 
 print("Execute this script in the same folder as events.csv & recording.pcm")
+shutil.rmtree("VolumeUp")
 createDir("VolumeUp")
+shutil.rmtree("VolumeDown")
 createDir("VolumeDown")
+shutil.rmtree("Noise")
 createDir("Noise")
 volUpCnt = 0
 volDownCnt = 0
@@ -38,7 +42,7 @@ with open("events.csv", "r") as e:
 
             startIdx = int(float(vals[1]) * kSampleRate) + kShift # In samples
             while(noiseIdx + kFrameSize < startIdx):
-                with open("Noise/Audio-{0}.pcm".format(noiseCnt), "w") as f:
+                with open("Noise/Audio-{0}.raw".format(noiseCnt), "w") as f:
                     f.write(audio[toBytes(noiseIdx):toBytes(noiseIdx + kFrameSize)])
                 noiseCnt += 1
                 noiseIdx += kFrameSize
@@ -46,11 +50,11 @@ with open("events.csv", "r") as e:
             noiseIdx = startIdx + kFrameSize
             sample = audio[toBytes(startIdx):toBytes(startIdx + kFrameSize)]
             if(vals[0] == "VolUp"):
-                with open("VolumeUp/Audio-{0}.pcm".format(volUpCnt), "w") as f:
+                with open("VolumeUp/Audio-{0}.raw".format(volUpCnt), "w") as f:
                     f.write(sample)
                     volUpCnt += 1
             elif(vals[0] == "VolDown"):
-                with open("VolumeDown/Audio-{0}.pcm".format(volDownCnt), "w") as f:
+                with open("VolumeDown/Audio-{0}.raw".format(volDownCnt), "w") as f:
                     f.write(sample)
                     volDownCnt += 1
             else:

@@ -9,7 +9,7 @@
 using namespace std;
 
 
-// Input: Directory name holding .pcm files
+// Input: Directory name holding .raw files
 // Output: vector of audio in byte strings
 vector<string> readAudioFiles(const string &directoryName) {
     DIR *dir;
@@ -19,7 +19,7 @@ vector<string> readAudioFiles(const string &directoryName) {
         /* print all the files and directories within directory */
         while ((ent = readdir (dir)) != NULL) {
             string f = ent->d_name;
-            if(f.find(".pcm") != string::npos) {
+            if(f.find(".raw") != string::npos) {
                 string absoluteFilePath = directoryName + "/" + f;
                 std::ifstream t(absoluteFilePath);
                 std::string str((std::istreambuf_iterator<char>(t)),

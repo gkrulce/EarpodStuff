@@ -15,9 +15,7 @@ class Frontend {
     private:
     const int sampleRate_;
     const int frameSize_{2205}; // In samples
-    const int fftOutputSize_;
-    const int buckets_{58};
-    const int bucketSize_;
+    const int fftOutputSize_{frameSize_/2+1};
     kiss_fft_cfg cfg_;
     kiss_fft_cpx *fin_;
     kiss_fft_cpx *fout_;
