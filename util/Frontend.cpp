@@ -3,6 +3,8 @@
 #include <numeric>
 #include <iostream>
 #include <cmath>
+#include <numeric>
+#include <algorithm>
 
 using namespace std;
 
@@ -25,7 +27,7 @@ vector<double> Frontend::calculate(const vector<unsigned char> &samples) {
         unsigned char lsb = samples.at(2*i);
         unsigned char msb = samples.at(2*i+1);
         short s = ((lsb << 8) | msb);
-        fin_[i].r = s;
+        fin_[i].r = ((double) s)/32768.0;
         fin_[i].i = 0;
     }
     kiss_fft(cfg_, fin_, fout_);
@@ -33,7 +35,19 @@ vector<double> Frontend::calculate(const vector<unsigned char> &samples) {
     for(int i = 0; i < fftOutputSize_; ++i) {
         realOutput.at(i) = fout_[i].r;
     }
-    return realOutput;
+    auto it = realOutput.begin();
+    vector<double> realBuckets;
+    for(const auto& bucket: buckets_) {
+        for(int i = 0; i < bucket.first; ++i) {
+            auto max = max_element(it, it + bucket.second);
+            auto min = min_element(it, it + bucket.second);
+            realBuckets.push_back(*max);
+            realBuckets.push_back(*min);
+            it += bucket.second;
+        }
+    }
+    assert(it == realOutput.end());
+    return realBuckets;
 }
 
 
