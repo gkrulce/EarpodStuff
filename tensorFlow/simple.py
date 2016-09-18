@@ -78,13 +78,15 @@ def main(argv):
     checkpointDir = argv[0]
     iosTrainingData = "IosTrainingData.csv"
     iosTestingData = "IosTestingData.csv"
-    #androidTrainingData = ""
-    #androidTestingData = ""
+    androidTrainingData = "AndroidTrainingData.csv"
+    androidTestingData = "AndroidTestingData.csv"
 
     # Import data
     print("Reading IOS training data from {0}, testing data from {1} and writing a checkout files to {2}".format(iosTrainingData, iosTestingData, checkpointDir))
     training_data = data_read(iosTrainingData)
     testing_data = data_read(iosTestingData)
+    android_training_data = data_read(androidTrainingData)
+    android_testing_data = data_read(androidTestingData)
 
     inputDim = training_data["FeaturesDim"]
     outputDim = training_data["ClassesDim"]
@@ -100,7 +102,7 @@ def main(argv):
     cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
 
     # Traning
-    train_step = tf.train.GradientDescentOptimizer(0.0001).minimize(cross_entropy)
+    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
     init = tf.initialize_all_variables()
     saver = tf.train.Saver()
     with tf.Session() as sess:
@@ -114,8 +116,10 @@ def main(argv):
                 correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
                 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
                 test_xs, test_ys = data_all(testing_data)
+                android_xs, android_ys = data_all(android_testing_data)
                 testing_accuracy = sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})
-                print("{0}\tACCURACY\t{1}".format(i, testing_accuracy))
+                android_accuracy = sess.run(accuracy, feed_dict={x: android_xs, y_: android_ys})
+                print("{0}\tACCURACY\t{1}\tANDROID_ACCURACY\t{2}".format(i, testing_accuracy, android_accuracy))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
