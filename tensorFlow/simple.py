@@ -73,6 +73,9 @@ def dumpToFile(name, npArr, fileName):
             oF.write("{{{0}}}, \n".format(",".join([str(val) for val in l])))
         oF.write("}; \n");
 
+def init_weights(shape):
+    return tf.Variable(tf.random_normal(shape, stddev=0.01))
+
 def main(argv):
     assert(len(argv) == 1)
     checkpointDir = argv[0]
@@ -80,6 +83,7 @@ def main(argv):
     iosTestingData = "IosTestingData.csv"
     androidTrainingData = "AndroidTrainingData.csv"
     androidTestingData = "AndroidTestingData.csv"
+    outputModelFile = "nn.hpp"
 
     # Import data
     print("Reading IOS training data from {0}, testing data from {1} and writing a checkout files to {2}".format(iosTrainingData, iosTestingData, checkpointDir))
@@ -90,29 +94,32 @@ def main(argv):
 
     inputDim = training_data["FeaturesDim"]
     outputDim = training_data["ClassesDim"]
+    hiddenDim = (inputDim + outputDim)/2
+    print "Hidden layer dimensions {0}".format(hiddenDim)
 
-    # Model
+    # Main model
     x = tf.placeholder(tf.float32, [None, inputDim])
-    W = tf.Variable(tf.zeros([inputDim, outputDim]))
-    b = tf.Variable(tf.zeros([outputDim]))
-    y = tf.nn.softmax(tf.matmul(x, W) + b)
+    w_h = init_weights([inputDim, hiddenDim])
+    w_o = init_weights([hiddenDim, outputDim])
+    h = tf.sigmoid(tf.matmul(x, w_h))
+    y = tf.nn.softmax(tf.matmul(h, w_o))
 
     # Loss function
     y_ = tf.placeholder(tf.float32, [None, outputDim])
     cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
 
     # Traning
-    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
+    main_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
     init = tf.initialize_all_variables()
     saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(init)
         for i in range(5000):
-            batch_xs, batch_ys = data_next(training_data,200)
-            sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+            batch_xs, batch_ys = data_next(training_data,2000)
+            sess.run(main_train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-            if i % 500 == 0:
-                saver.save(sess, checkpointDir + "/model-{0}.ckpt".format(i))
+            if i % 100 == 0:
+                saver.save(sess, checkpointDir + "/main-model-{0}.ckpt".format(i))
                 correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
                 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
                 test_xs, test_ys = data_all(testing_data)

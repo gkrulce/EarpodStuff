@@ -8,18 +8,17 @@ kFrameSize = 2205 # In samples
 kShift = 0 # In samples
 
 def createDir(dirName):
-    if not os.path.exists(dirName):
-            os.makedirs(dirName)
+    if os.path.exists(dirName):
+        shutil.rmtree(dirName)
+
+    os.makedirs(dirName)
 
 def toBytes(idx):
     return idx * kSampleWidth
 
 print("Execute this script in the same folder as events.csv & recording.pcm")
-shutil.rmtree("VolumeUp")
 createDir("VolumeUp")
-shutil.rmtree("VolumeDown")
 createDir("VolumeDown")
-shutil.rmtree("Noise")
 createDir("Noise")
 volUpCnt = 0
 volDownCnt = 0

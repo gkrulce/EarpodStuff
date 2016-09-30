@@ -22,8 +22,13 @@ vector<string> readAudioFiles(const string &directoryName) {
             if(f.find(".raw") != string::npos) {
                 string absoluteFilePath = directoryName + "/" + f;
                 std::ifstream t(absoluteFilePath);
-                std::string str((std::istreambuf_iterator<char>(t)),
-                                 std::istreambuf_iterator<char>());
+                string str;
+
+                t.seekg(0, std::ios::end);   
+                str.reserve(t.tellg());
+                t.seekg(0, std::ios::beg);
+
+                str.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
                 byteStrs.push_back(str);
             }
         }
