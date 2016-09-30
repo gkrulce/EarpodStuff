@@ -41,13 +41,7 @@ def data_read(fileName):
 # Input: data and number of samples
 # Output: tuple of random number of samples (input values, 1-hot output values)
 def data_next(data, n): 
-    volUp = random.sample(data["VolumeUp"], n)
-    volDown = random.sample(data["VolumeDown"], n)
-    noise  = random.sample(data["Noise"], n)
-    assert(len(volUp) == len(volDown) == len(noise))
-    l = len(volUp)
-    toReturn = volUp + volDown + noise, [[1,0,0]]*l + [[0,1,0]]*l + [[0,0,1]]*l
-    return toReturn
+    return data_all(data)[:n]
 
 def data_all(data):
     volUp = data["VolumeUp"]
@@ -56,6 +50,16 @@ def data_all(data):
     toReturn = volUp + volDown + noise, [[1,0,0]]*len(volUp) + [[0,1,0]]*len(volDown) + [[0,0,1]]*len(noise)
 
     return toReturn
+
+def data_priors(data):
+    total = float(len(data["VolumeUp"]) + len(data["VolumeDown"]) + len(data["Noise"]))
+    volUp = total/len(data["VolumeUp"])
+    volDown = total/len(data["VolumeDown"])
+    noise = total/len(data["Noise"])
+    arr = [[volUp, 0.0, 0.0],[0.0, volDown, 0.0],[0.0, 0.0, noise]]
+    print arr
+    priors = tf.constant(arr)
+    return priors
 
 # name: Name of the matrix
 # npArr: The numpy array of this matrix
@@ -75,6 +79,9 @@ def dumpToFile(name, npArr, fileName):
 
 def init_weights(shape):
     return tf.Variable(tf.random_normal(shape, stddev=0.01))
+
+def loss(calc, ref, priors):
+    return tf.reduce_mean(-tf.reduce_sum(ref * tf.log(tf.matmul(calc, priors)), reduction_indices=[1]))
 
 def main(argv):
     assert(len(argv) == 1)
@@ -106,19 +113,19 @@ def main(argv):
 
     # Loss function
     y_ = tf.placeholder(tf.float32, [None, outputDim])
-    cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+    main_cross_entropy = loss(y, y_, data_priors(training_data))
 
     # Traning
-    main_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+    main_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(main_cross_entropy)
     init = tf.initialize_all_variables()
     saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(init)
         for i in range(5000):
-            batch_xs, batch_ys = data_next(training_data,2000)
+            batch_xs, batch_ys = data_next(training_data, 2000)
             sess.run(main_train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-            if i % 100 == 0:
+            if i % 10 == 0:
                 saver.save(sess, checkpointDir + "/main-model-{0}.ckpt".format(i))
                 correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
                 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
