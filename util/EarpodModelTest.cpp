@@ -1,13 +1,15 @@
 #include "EarpodModel.hpp"
+#include <assert.h>
 #include <iostream>
 #include <iterator>
 #include <fstream>
 
 using namespace std;
 
-int main() {
+int main(int argc, char ** argv) {
+    assert(argc == 2);
     EarpodModel model;
-    std::ifstream testFile("/Users/gkrulce/Documents/Intensity/data/Android/recording.pcm", std::ios::binary);
+    std::ifstream testFile(argv[1], std::ios::binary);
     std::vector<unsigned char> fileContents((std::istreambuf_iterator<char>(testFile)),
                                    std::istreambuf_iterator<char>());
     std::vector<unsigned char> zeros(32000, '\1');

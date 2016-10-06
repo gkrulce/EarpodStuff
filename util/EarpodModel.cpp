@@ -10,6 +10,19 @@
 
 using namespace std;
 typedef EarpodModel EM;
+EM::Matrix EM::sigmoid(const EM::Matrix &mat) {
+    int r = mat.size();
+    int c = mat.at(0).size();
+    Matrix ret(r);
+    for(int i = 0; i < r; ++i) {
+        ret[i] = vector<double>(c);
+        for(int j = 0; j < c; ++j) {
+            double val = 1/(1 + exp(-1 * mat[i][j]));
+            ret[i][j] = val;
+        }
+    }
+    return ret;
+}
 EM::Matrix EM::matMul(const EM::Matrix &lhs, const EM::Matrix &rhs) {
     int lhsR = lhs.size();
     int lhsC = lhs.at(0).size();
@@ -70,24 +83,21 @@ void EM::print(const Matrix &mat) {
     }
 }
 
-EM::EarpodModel() : sampleSize_(frontend_.getSampleSize()) {
-    EM::Matrix WMat(W_ROWS);
-    for(int i = 0; i < W_ROWS; ++i) {
-        WMat.at(i) = vector<double>(W_COLS);
-        for(int j = 0; j < W_COLS; ++j) {
-            WMat.at(i).at(j) = W_DATA[i][j];
+EM::Matrix EM::readMatrix(int r, int c, float *data) {
+    EM::Matrix mat(r);
+    for(int i = 0; i < r; ++i) {
+        mat.at(i) = vector<double>(c);
+        for(int j = 0; j < c; ++j) {
+            mat.at(i).at(j) = data[i*c + j];
         }
     }
-    mats_["W"] = WMat;
+    return mat;
+}
 
-    EM::Matrix BMat(B_ROWS);
-    for(int i = 0; i < B_ROWS; ++i) {
-        BMat.at(i) = vector<double>(B_COLS);
-        for(int j = 0; j < B_COLS; ++j) {
-            BMat.at(i).at(j) = B_DATA[i][j];
-        }
-    }
-    mats_["B"] = BMat;
+EM::EarpodModel() : sampleSize_(frontend_.getSampleSize()) {
+    mats_["W_H"] = readMatrix(W_H_ROWS, W_H_COLS, W_H_DATA);
+    mats_["W_DH"] = readMatrix(W_DH_ROWS, W_DH_COLS, W_DH_DATA);
+    mats_["W_O"] = readMatrix(W_O_ROWS, W_O_COLS, W_O_DATA);
 }
 vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
     // TODO use a frame shifting algorithm instead
@@ -101,7 +111,9 @@ vector<EM::Token> EM::read(const std::vector<unsigned char> &data) {
         vector<double> featuresVector = frontend_.calculate(toSend);
         EM::Matrix features;
         features.push_back(featuresVector);
-        Matrix outputMat = softMax(matAdd(matMul(features, mats_["W"]), mats_["B"]));
+        Matrix h = sigmoid(matMul(features, mats_["W_H"]));
+        Matrix dh = sigmoid(matMul(h, mats_["W_DH"]));
+        Matrix outputMat = softMax(matMul(dh, mats_["W_O"]));
         assert(outputMat.size() == 1);
         std::vector<double> output= outputMat.at(0);
         assert(output.size() == 3);

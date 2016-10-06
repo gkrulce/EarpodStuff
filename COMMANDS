@@ -1,0 +1,1 @@
+RUN="Test" && rm -rf $RUN && mkdir $RUN && python -u tensorFlow/simple.py $RUN > $RUN/log

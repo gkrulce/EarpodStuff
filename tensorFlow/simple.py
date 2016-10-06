@@ -64,18 +64,17 @@ def data_priors(data):
 # name: Name of the matrix
 # npArr: The numpy array of this matrix
 # The file name we are APPENDING to
-def dumpToFile(name, npArr, fileName):
+def dumpToFile(name, npArr, oF):
     npShape = numpy.shape(npArr)
     rows = numpy.shape(npArr)[0]
     cols = numpy.shape(npArr)[1]
 
-    with open(fileName, "a") as oF:
-        oF.write("#define {0}_ROWS {1}\n".format(name, rows))
-        oF.write("#define {0}_COLS {1}\n".format(name, cols))
-        oF.write("static float {0}_DATA[{1}][{2}] = {{ \n".format(name, rows, cols))
-        for l in npArr:
-            oF.write("{{{0}}}, \n".format(",".join([str(val) for val in l])))
-        oF.write("}; \n");
+    oF.write("#define {0}_ROWS {1}\n".format(name, rows))
+    oF.write("#define {0}_COLS {1}\n".format(name, cols))
+    oF.write("static float {0}_DATA[{1}] = {{".format(name, rows *cols))
+    for l in npArr:
+        oF.write("{0},\n".format(",".join([str(val) for val in l])))
+    oF.write("}; \n");
 
 def init_weights(shape):
     return tf.Variable(tf.random_normal(shape, stddev=0.01))
@@ -102,31 +101,39 @@ def main(argv):
     inputDim = training_data["FeaturesDim"]
     outputDim = training_data["ClassesDim"]
     hiddenDim = (inputDim + outputDim)/2
-    print "Hidden layer dimensions {0}".format(hiddenDim)
+    deepHiddenDim = 6
+    print "Input dim: {0}. Hidden dim: {1}. Deep hidden dim: {2}".format(inputDim, hiddenDim, deepHiddenDim)
 
     # Main model
     x = tf.placeholder(tf.float32, [None, inputDim])
     w_h = init_weights([inputDim, hiddenDim])
-    w_o = init_weights([hiddenDim, outputDim])
+    w_dh = init_weights([hiddenDim, deepHiddenDim])
+    w_o = init_weights([deepHiddenDim, outputDim])
     h = tf.sigmoid(tf.matmul(x, w_h))
-    y = tf.nn.softmax(tf.matmul(h, w_o))
+    dh = tf.sigmoid(tf.matmul(h, w_dh))
+    y = tf.nn.softmax(tf.matmul(dh, w_o))
 
     # Loss function
     y_ = tf.placeholder(tf.float32, [None, outputDim])
     main_cross_entropy = loss(y, y_, data_priors(training_data))
+    customized_cross_entropy = loss(y, y_, data_priors(android_training_data))
 
     # Traning
     main_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(main_cross_entropy)
+    customized_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(customized_cross_entropy, var_list=[w_dh])
     init = tf.initialize_all_variables()
     saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(init)
-        for i in range(5000):
+        with open("nn.hpp", "w") as f:
+            dumpToFile("W_H", w_h.eval(), f)
+            dumpToFile("W_DH", w_dh.eval(), f)
+            dumpToFile("W_O", w_o.eval(), f)
+        for i in range(50000): # 10000 is a decent approximation
             batch_xs, batch_ys = data_next(training_data, 2000)
             sess.run(main_train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-            if i % 10 == 0:
-                saver.save(sess, checkpointDir + "/main-model-{0}.ckpt".format(i))
+            if i % 1 == 0:
                 correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
                 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
                 test_xs, test_ys = data_all(testing_data)
@@ -134,6 +141,27 @@ def main(argv):
                 testing_accuracy = sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})
                 android_accuracy = sess.run(accuracy, feed_dict={x: android_xs, y_: android_ys})
                 print("{0}\tACCURACY\t{1}\tANDROID_ACCURACY\t{2}".format(i, testing_accuracy, android_accuracy))
+
+            if i % 1000 == 0:
+                saver.save(sess, checkpointDir + "/main-model-{0}.ckpt".format(i))
+                print ("Saving checkpoint file {0}".format(i))
+
+        for i in range(5000):
+            batch_xs, batch_ys = data_all(android_training_data)
+            sess.run(customized_train_step, feed_dict={x: batch_xs, y_: batch_ys})
+
+            if i % 1 == 0:
+                correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
+                accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+                test_xs, test_ys = data_all(testing_data)
+                android_xs, android_ys = data_all(android_testing_data)
+                testing_accuracy = sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})
+                android_accuracy = sess.run(accuracy, feed_dict={x: android_xs, y_: android_ys})
+                print("{0}\tACCURACY\t{1}\tANDROID_ACCURACY\t{2}".format(i, testing_accuracy, android_accuracy))
+
+            if i % 1000 == 0:
+                saver.save(sess, checkpointDir + "/customized-model-{0}.ckpt".format(i))
+                print ("Saving checkpoint file {0}".format(i))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

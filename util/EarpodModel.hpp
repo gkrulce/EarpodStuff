@@ -21,6 +21,8 @@ class EarpodModel {
     static Matrix matMul(const Matrix &lhs, const Matrix &rhs);
     static Matrix matAdd(const Matrix &lhs, const Matrix &rhs);
     static Matrix softMax(const Matrix &mat);
+    static Matrix sigmoid(const Matrix &mat);
+    static Matrix readMatrix(int r, int c, float *data);
     static void print(const Matrix &mat);
     Frontend frontend_ {44100};
     const int sampleSize_;
