@@ -1,15 +1,40 @@
 package com.gkrulce.androiddemoapp;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     final static String TAG = "MainActivity";
+    private MicRecorder recorder;
+    Toast cToast;
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message inputMessage) {
+            String message = (String) inputMessage.obj;
+            if(inputMessage.what == 0) {
+                if(cToast != null) {
+                    cToast.cancel();
+                }
+                Log.v(TAG, message);
+                Context context = getApplicationContext();
+                int duration = Toast.LENGTH_SHORT;
+                cToast = Toast.makeText(context, message, duration);
+                cToast.show();
+            }else {
+                throw new RuntimeException("Message had error code.");
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,23 +76,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private MicRecorder recorder;
-
     private class VolumeChangeListener implements VolumeChangeEvent {
 
         @Override
         public void onVolumeUp() {
-            Log.v(TAG, "Volume Up!");
+            mHandler.obtainMessage(0, "Volume Up!").sendToTarget();
         }
 
         @Override
         public void onVolumeDown() {
-            Log.v(TAG, "Volume Down!");
+            mHandler.obtainMessage(0, "Volume Down!").sendToTarget();
         }
 
         @Override
         public void onError() {
-            Log.v(TAG, "OnError");
+            mHandler.obtainMessage(0, "Error!").sendToTarget();
         }
     }
 
