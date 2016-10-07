@@ -10,8 +10,8 @@ Java_com_gkrulce_androiddemoapp_JEarpodModel_readJni(JNIEnv *env, jobject instan
     for (int i = 0; i < arrSize; ++i) {
         unsigned char lsb = samples[i];
         unsigned char msb = (samples[i] >> 8);
-        toSend.at(2 * i) = lsb;
-        toSend.at(2 * i + 1) = msb;
+        toSend.at(2 * i) = msb;
+        toSend.at(2 * i + 1) = lsb;
     }
     EarpodModel model;
     std::vector<EarpodModel::Token> emBeg = model.read(toSend);
