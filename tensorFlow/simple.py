@@ -82,6 +82,22 @@ def init_weights(shape):
 def loss(calc, ref, priors):
     return tf.reduce_mean(-tf.reduce_sum(ref * tf.log(tf.matmul(calc, priors)), reduction_indices=[1]))
 
+def train(sess, train_step, training_data, inputTensor, outputTensor):
+    batch_xs, batch_ys = data_all(training_data)
+    sess.run(train_step, feed_dict={inputTensor: batch_xs, outputTensor: batch_ys})
+
+def evaluate(sess, accuracy, testing_data, android_testing_data, inputTensor, outputTensor):
+    test_xs, test_ys = data_all(testing_data)
+    testing_accuracy = sess.run(accuracy, feed_dict={inputTensor: test_xs, outputTensor: test_ys})
+    android_xs, android_ys = data_all(android_testing_data)
+    android_accuracy = sess.run(accuracy, feed_dict={inputTensor: android_xs, outputTensor: android_ys})
+    print("ACCURACY\t{0}\tANDROID_ACCURACY\t{1}".format(testing_accuracy, android_accuracy))
+
+def checkpoint(sess, saver, path):
+    saver.save(sess, path)
+    print ("Saving checkpoint file {0}".format(path))
+
+
 def main(argv):
     assert(len(argv) == 1)
     checkpointDir = argv[0]
@@ -113,55 +129,31 @@ def main(argv):
     dh = tf.sigmoid(tf.matmul(h, w_dh))
     y = tf.nn.softmax(tf.matmul(dh, w_o))
 
-    # Loss function
     y_ = tf.placeholder(tf.float32, [None, outputDim])
     main_cross_entropy = loss(y, y_, data_priors(training_data))
     customized_cross_entropy = loss(y, y_, data_priors(android_training_data))
+
+    correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     # Traning
     main_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(main_cross_entropy)
     customized_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(customized_cross_entropy, var_list=[w_dh])
     init = tf.initialize_all_variables()
-    saver = tf.train.Saver()
+    saver = tf.train.Saver(max_to_keep=10000)
     with tf.Session() as sess:
         sess.run(init)
-        with open("nn.hpp", "w") as f:
-            dumpToFile("W_H", w_h.eval(), f)
-            dumpToFile("W_DH", w_dh.eval(), f)
-            dumpToFile("W_O", w_o.eval(), f)
-        for i in range(50000): # 10000 is a decent approximation
-            batch_xs, batch_ys = data_next(training_data, 2000)
-            sess.run(main_train_step, feed_dict={x: batch_xs, y_: batch_ys})
-
-            if i % 1 == 0:
-                correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
-                accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-                test_xs, test_ys = data_all(testing_data)
-                android_xs, android_ys = data_all(android_testing_data)
-                testing_accuracy = sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})
-                android_accuracy = sess.run(accuracy, feed_dict={x: android_xs, y_: android_ys})
-                print("{0}\tACCURACY\t{1}\tANDROID_ACCURACY\t{2}".format(i, testing_accuracy, android_accuracy))
-
+        for i in range(500000): # About 5 days
+            train(sess, main_train_step, training_data, x, y_)
+            evaluate(sess, accuracy, testing_data, android_testing_data, x, y_)
             if i % 1000 == 0:
-                saver.save(sess, checkpointDir + "/main-model-{0}.ckpt".format(i))
-                print ("Saving checkpoint file {0}".format(i))
+                checkpoint(sess, saver, checkpointDir + "/main-model-{0}.ckpt".format(i))
 
-        for i in range(5000):
-            batch_xs, batch_ys = data_all(android_training_data)
-            sess.run(customized_train_step, feed_dict={x: batch_xs, y_: batch_ys})
-
-            if i % 1 == 0:
-                correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
-                accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-                test_xs, test_ys = data_all(testing_data)
-                android_xs, android_ys = data_all(android_testing_data)
-                testing_accuracy = sess.run(accuracy, feed_dict={x: test_xs, y_: test_ys})
-                android_accuracy = sess.run(accuracy, feed_dict={x: android_xs, y_: android_ys})
-                print("{0}\tACCURACY\t{1}\tANDROID_ACCURACY\t{2}".format(i, testing_accuracy, android_accuracy))
-
-            if i % 1000 == 0:
-                saver.save(sess, checkpointDir + "/customized-model-{0}.ckpt".format(i))
-                print ("Saving checkpoint file {0}".format(i))
+        #for i in range(5000):
+        #    train(sess, customized_train_step, android_training_data, x, y_)
+        #    evaluate(sess, accuracy, testing_data, android_testing_data, x, y_)
+        #    if i % 1000 == 0:
+        #        checkpoint(sess, saver, checkpointDir + "/customized--model-{0}.ckpt".format(i))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
